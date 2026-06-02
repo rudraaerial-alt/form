@@ -6,7 +6,7 @@ from flask import Flask, jsonify, render_template, request
 from openpyxl import Workbook, load_workbook
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = Path(os.environ.get("APP_DATA_DIR", BASE_DIR / "data"))
+DATA_DIR = Path(r"C:\Users\rudrasin\Desktop\PY TO EXE\PE-Form\folder path")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 EXCEL_FILE_PATH = DATA_DIR / "pe_form_data.xlsx"
 
