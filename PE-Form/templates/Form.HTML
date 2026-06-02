@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PE Form</title>
+  <style>
+    :root {
+      --primary: #0f4c81;
+      --primary2: #1e88c8;
+      --secondary: #233d7b;
+      --bg: #f4f8fc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #dbe4f0;
+      --danger: #ef4444;
+      --shadow: 0 16px 34px rgba(15, 76, 129, 0.10);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #eef5fd, #f9fbff);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 320px;
+      background: linear-gradient(180deg, #113b60 0%, #0f4c81 100%);
+      color: #fff;
+      padding: 20px;
+      box-shadow: 8px 0 24px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(10px);
+    }
+
+    .sidebar-header h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .sidebar-header p { font-size: 12px; color: rgba(255, 255, 255, 0.84); line-height: 1.55; }
+    .sidebar-subtitle { font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, 0.78); margin: 14px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .activity-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .activity-item {
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-left: 4px solid #7dd3fc;
+      border-radius: 16px;
+      padding: 14px;
+      transition: 0.25s ease;
+    }
+
+    .activity-item:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.15); }
+    .activity-item strong { display: block; font-size: 15px; line-height: 1.45; margin-bottom: 7px; }
+    .activity-item span { display: block; font-size: 12px; color: rgba(255, 255, 255, 0.84); line-height: 1.5; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      color: #bff7e3;
+    }
+
+    .main { flex: 1; padding: 24px; }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 55%, #39a6df 100%);
+      color: #fff;
+      border-radius: 24px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-title h1 { font-size: 30px; margin-bottom: 6px; }
+    .topbar-title p { font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, 0.88); }
+    .topbar-cards { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 12px 16px;
+      min-width: 140px;
+    }
+
+    .mini-card small { display: block; font-size: 12px; color: rgba(255, 255, 255, 0.82); margin-bottom: 4px; }
+    .mini-card strong { font-size: 18px; line-height: 1.3; word-break: break-word; }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.3fr) minmax(220px, 0.75fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid #eaf1f8;
+      overflow: hidden;
+    }
+
+    .card-header { padding: 20px 24px; border-bottom: 1px solid #edf2f7; }
+    .card-header h2 { font-size: 22px; color: var(--secondary); margin-bottom: 6px; }
+    .card-header p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .card-body { padding: 24px; }
+
+    .summary-panel {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 18px 24px;
+      border-bottom: 1px solid #edf2f7;
+      background: linear-gradient(180deg, #fbfdff 0%, #f5f9fe 100%);
+    }
+
+    .summary-item {
+      background: #fff;
+      border: 1px solid #e6eef8;
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: 0 8px 18px rgba(15, 76, 129, 0.05);
+    }
+
+    .summary-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .summary-item strong { font-size: 15px; color: var(--secondary); line-height: 1.4; word-break: break-word; }
+    .side-panel { position: sticky; top: 24px; }
+
+    .logo-card {
+      background: linear-gradient(135deg, #0f4c81 0%, #1677b8 55%, #3fb0e2 100%);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 26px 18px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo-card::before {
+      content: "";
+      position: absolute;
+      left: -30px;
+      top: -30px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .logo-card::after {
+      content: "";
+      position: absolute;
+      right: -35px;
+      bottom: -35px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .nokia-logo { position: relative; z-index: 2; font-size: 42px; font-weight: 300; letter-spacing: 3px; color: #fff; line-height: 1; margin-bottom: 14px; }
+    .logo-caption { position: relative; z-index: 2; font-size: 13px; color: rgba(255, 255, 255, 0.92); line-height: 1.6; max-width: 240px; }
+    .section-title { font-size: 15px; font-weight: 800; color: var(--secondary); margin: 8px 0 14px; padding-left: 12px; border-left: 4px solid var(--primary2); }
+    .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group.full { grid-column: span 2; }
+    .form-group.wide { grid-column: span 4; }
+    label { font-size: 13px; font-weight: 700; color: #374151; }
+    .required::after { content: " *"; color: var(--danger); }
+    .help-text { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.8px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      font-size: 14px;
+      background: #fbfdff;
+      color: var(--text);
+      transition: 0.25s ease;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary2);
+      box-shadow: 0 0 0 4px rgba(30, 136, 200, 0.12);
+      background: #fff;
+    }
+
+    .dd { position: relative; width: 100%; }
+
+    .dd-btn {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 14px;
+      border: 1.8px solid var(--border);
+      border-radius: 12px;
+      background: #fbfdff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .dd-btn.open, .dd-btn:focus {
+      border-color: var(--primary2);
+      box-shadow: 0 0 0 4px rgba(30, 136, 200, 0.12);
+      background: #fff;
+    }
+
+    .dd-btn-text {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      text-align: left;
+      color: #374151;
+      flex: 1;
+    }
+
+    .placeholder { color: #9ca3af; font-size: 14px; font-weight: 500; }
+
+    .chip {
+      background: #e9f5ff;
+      color: #0b5f96;
+      border: 1px solid #cde9ff;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dd-icon { font-size: 12px; color: #6b7280; transition: transform 0.25s ease; flex-shrink: 0; }
+    .dd-btn.open .dd-icon { transform: rotate(180deg); }
+
+    .dd-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #dfe9f5;
+      border-radius: 16px;
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.12);
+      padding: 12px;
+      z-index: 50;
+      display: none;
+    }
+
+    .dd.open .dd-menu { display: block; }
+    .dd-search { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; outline: none; margin-bottom: 10px; font-size: 13px; }
+    .dd-options { max-height: 230px; overflow: auto; padding-right: 4px; }
+
+    .dd-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .dd-option:hover { background: #f4faff; }
+    .dd-option input { accent-color: var(--primary); transform: translateY(1px); }
+    .dd-option span { font-size: 14px; color: #374151; line-height: 1.4; }
+    .btn-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+
+    button {
+      border: none;
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.25s ease;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary2)); color: #fff; }
+    .btn-secondary { background: #fff; border: 1px solid var(--border); color: var(--secondary); }
+    .btn-primary:hover, .btn-secondary:hover { transform: translateY(-2px); }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #111827;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 12px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+      transition: 0.3s ease;
+      z-index: 1000;
+      font-size: 14px;
+    }
+
+    .toast.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    @media (max-width: 1280px) {
+      .content-layout { grid-template-columns: 1fr; }
+      .side-panel { position: relative; top: 0; order: -1; }
+      .form-grid { grid-template-columns: repeat(3, 1fr); }
+      .form-group.wide { grid-column: span 3; }
+      .summary-panel { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 980px) {
+      .app { flex-direction: column; }
+      .sidebar { width: 100%; position: relative; height: auto; }
+      .form-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-group.full, .form-group.wide { grid-column: span 2; }
+    }
+
+    @media (max-width: 640px) {
+      .main { padding: 14px; }
+      .topbar-title h1 { font-size: 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full, .form-group.wide { grid-column: span 1; }
+      .summary-panel { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>SR. No. & Executor</h2>
+        <p>
+          Saved / planned activities ka quick preview yahan dikhega.
+          Har entry me <strong>S.No + Activity Executor + Domain</strong> show hoga.
+        </p>
+      </div>
+
+      <div class="sidebar-subtitle">Planned Activities</div>
+      <div class="activity-list" id="activityList">
+        <div class="activity-item empty">
+          <strong>No activity saved yet</strong>
+          <span>Save karne ke baad activity yahan add hogi.</span>
+          <span class="tag">Waiting</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title">
+          <h1>PE Form</h1>
+          <p>
+            Custom dropdown IDs JavaScript ke hisaab se same rakhe gaye hain.
+            Dropdown load hote hi HTML view me properly render honge.
+          </p>
+        </div>
+
+        <div class="topbar-cards">
+          <div class="mini-card">
+            <small>Current S.No</small>
+            <strong id="badgeSno">-</strong>
+          </div>
+          <div class="mini-card">
+            <small>Current Status</small>
+            <strong id="badgeStatus">Draft</strong>
+          </div>
+          <div class="mini-card">
+            <small>Last Action</small>
+            <strong id="badgeAction">Ready</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-layout">
+        <section class="card">
+          <div class="card-header">
+            <h2>PE Activity Entry Form</h2>
+            <p>
+              Host IDs exactly JavaScript ke hisaab se rakhe gaye hain:
+              <strong>dd-peNonPe, dd-category, dd-executor</strong> etc.
+            </p>
+          </div>
+
+          <div class="summary-panel">
+            <div class="summary-item">
+              <span class="summary-label">S.No</span>
+              <strong id="summarySno">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">PE / Non-PE</span>
+              <strong id="summaryPeType">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Category</span>
+              <strong id="summaryCategory">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Executor</span>
+              <strong id="summaryExecutor">-</strong>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <form id="peForm">
+              <div class="section-title">Basic Information</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="sno" class="required">S.No</label>
+                  <input id="sno" name="sno" type="text" readonly />
+                  <div class="help-text">Auto serial backend se ayega.</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="required">PE / Non-PE</label>
+                  <div id="dd-peNonPe"></div>
+                </div>
+
+                <div class="form-group">
+                  <label class="required">Category</label>
+                  <div id="dd-category"></div>
+                </div>
+
+                <div class="form-group">
+                  <label class="required">Executor</label>
+                  <div id="dd-executor"></div>
+                </div>
+
+                <div class="form-group">
+                  <label for="totalNodeCount">Total Node Count</label>
+                  <input id="totalNodeCount" name="totalNodeCount" type="number" placeholder="Enter total node count" min="0" />
+                </div>
+
+                <div class="form-group">
+                  <label class="required">Site / Cell</label>
+                  <div id="dd-siteCell"></div>
+                </div>
+
+                <div class="form-group full">
+                  <label>Circle</label>
+                  <div id="dd-circle"></div>
+                  <div class="help-text">Multiple circles select kar sakte hain.</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="dateOfPe">Date of PE</label>
+                  <input id="dateOfPe" name="dateOfPe" type="date" />
+                </div>
+              </div>
+
+              <div class="section-title">PE Purpose Details</div>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>PE Purpose</label>
+                  <div id="dd-pePurpose"></div>
+                </div>
+                <div class="form-group full">
+                  <label>PE Purpose - Sub2</label>
+                  <div id="dd-pePurposeSub2"></div>
+                </div>
+              </div>
+
+              <div class="section-title">People / Ownership</div>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>Activity Initiator</label>
+                  <div id="dd-activityInitiator"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Activity Owner</label>
+                  <div id="dd-activityOwner"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Activity Executor</label>
+                  <div id="dd-activityExecutor"></div>
+                </div>
+              </div>
+
+              <div class="section-title">Approval & Status</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Deploy Approval</label>
+                  <div id="dd-deployApproval"></div>
+                </div>
+                <div class="form-group">
+                  <label>NPO KPI Approval</label>
+                  <div id="dd-npoKpiApproval"></div>
+                </div>
+                <div class="form-group">
+                  <label>NPO AT Approval</label>
+                  <div id="dd-npoAtApproval"></div>
+                </div>
+                <div class="form-group">
+                  <label>TSS Approval</label>
+                  <div id="dd-tssApproval"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Status</label>
+                  <div id="dd-status"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Domain</label>
+                  <div id="dd-domain"></div>
+                </div>
+              </div>
+
+              <div class="section-title">Remarks</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Remarks1</label>
+                  <div id="dd-remarks1"></div>
+                </div>
+                <div class="form-group">
+                  <label>Remarks2</label>
+                  <div id="dd-remarks2"></div>
+                </div>
+                <div class="form-group wide">
+                  <label for="remarks">Remarks</label>
+                  <textarea id="remarks" name="remarks" placeholder="User ka input yahan likhega..."></textarea>
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn-primary">Save to Excel</button>
+                <button type="button" class="btn-secondary" id="resetBtn">New Activity</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="logo-card">
+            <div class="nokia-logo">NOKIA</div>
+            <div class="logo-caption">PE Form ke right side top me Nokia logo rakha gaya hai.</div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="{{ url_for('static', filename='Script.js') }}"></script>
+</body>
+</html>
