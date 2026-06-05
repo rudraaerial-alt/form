@@ -6,6 +6,7 @@ from flask import Flask, jsonify, render_template, request
 from openpyxl import Workbook, load_workbook
 import msal
 import requests
+import traceback   # ✅ Added for better error logging
 
 # Use /tmp instead of /temp (safe in Linux/Render)
 BASE_DIR = Path("/tmp")
@@ -48,7 +49,7 @@ AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 SCOPES = ["https://graph.microsoft.com/.default"]
 
 def ensure_workbook() -> None:
-    # Create parent directory if missing
+    # ✅ Ensure parent directory exists
     EXCEL_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     if not EXCEL_FILE_PATH.exists():
@@ -164,6 +165,8 @@ def next_sno():
     try:
         return jsonify({"next_sno": get_next_sno()})
     except Exception as exc:
+        print("ERROR in /next-sno:", exc)
+        traceback.print_exc()
         return jsonify({"next_sno": "", "error": str(exc)}), 500
 
 @app.post("/submit")
@@ -183,6 +186,8 @@ def submit():
             }
         )
     except Exception as exc:
+        print("ERROR in /submit:", exc)
+        traceback.print_exc()
         return jsonify({"success": False, "message": str(exc)}), 500
 
 if __name__ == "__main__":
