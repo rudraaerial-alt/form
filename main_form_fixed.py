@@ -80,7 +80,7 @@ def upload_to_onedrive():
     token = result["access_token"]
 
     file_name = EXCEL_FILE_PATH.name
-    upload_url = f"https://graph.microsoft.com/v1.0/me/drive/root:/Documents/FormData/{file_name}:/content"
+    upload_url = f"https://graph.microsoft.com/v1.0/me/drive/root:/Rudra/PEData/{file_name}:/content"
 
     with open(EXCEL_FILE_PATH, "rb") as f:
         response = requests.put(
