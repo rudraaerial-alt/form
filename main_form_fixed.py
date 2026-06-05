@@ -47,7 +47,9 @@ AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 SCOPES = ["https://graph.microsoft.com/.default"]
 
 def ensure_workbook() -> None:
-     EXCEL_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # Create parent directory if missing
+    EXCEL_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     if not EXCEL_FILE_PATH.exists():
         workbook = Workbook()
         worksheet = workbook.active
@@ -55,7 +57,6 @@ def ensure_workbook() -> None:
         worksheet.append(HEADERS)
         workbook.save(EXCEL_FILE_PATH)
         workbook.close()
-
 def list_to_string(value):
     if isinstance(value, list):
         return ", ".join(str(item).strip() for item in value if str(item).strip())
