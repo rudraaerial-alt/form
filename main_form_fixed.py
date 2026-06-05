@@ -7,7 +7,7 @@ from openpyxl import Workbook, load_workbook
 import msal
 import requests
 
-BASE_DIR = Path("/persistent-data")
+BASE_DIR = Path("/temp")
 DATA_DIR = BASE_DIR / "data"
 EXCEL_FILE_PATH = DATA_DIR / "pe_form_data.xlsx"
 
