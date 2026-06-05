@@ -7,7 +7,8 @@ from openpyxl import Workbook, load_workbook
 import msal
 import requests
 
-BASE_DIR = Path("/temp")
+# Use /tmp instead of /temp (safe in Linux/Render)
+BASE_DIR = Path("/tmp")
 DATA_DIR = BASE_DIR / "data"
 EXCEL_FILE_PATH = DATA_DIR / "pe_form_data.xlsx"
 
@@ -57,6 +58,7 @@ def ensure_workbook() -> None:
         worksheet.append(HEADERS)
         workbook.save(EXCEL_FILE_PATH)
         workbook.close()
+
 def list_to_string(value):
     if isinstance(value, list):
         return ", ".join(str(item).strip() for item in value if str(item).strip())
