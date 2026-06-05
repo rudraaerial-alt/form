@@ -47,6 +47,7 @@ AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 SCOPES = ["https://graph.microsoft.com/.default"]
 
 def ensure_workbook() -> None:
+     EXCEL_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not EXCEL_FILE_PATH.exists():
         workbook = Workbook()
         worksheet = workbook.active
