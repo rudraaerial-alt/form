@@ -52,9 +52,9 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 # IMPORTANT:
 # Put these in environment variables, NOT hard-coded in source code
 # -----------------------------
-CLIENT_ID = os.getenv("CLIENT_ID", "e79ecadf-7da2-4ff3-9ca6-f3738141952e").strip()
-TENANT_ID = os.getenv("TENANT_ID", "5d471751-9675-428d-917b-70f44f9630b0").strip()
-CLIENT_SECRET = os.getenv("CLIENT_SECRET", "PT58Q~dEf151~EXjh9L2HxVYNZKJZqWNTHoWMaE2").strip()
+CLIENT_ID = os.getenv("CLIENT_ID", "").strip()
+TENANT_ID = os.getenv("TENANT_ID", "").strip()
+CLIENT_SECRET = os.getenv("CLIENT_SECRET", "").strip()
 
 # Example: user@yourcompany.com OR Azure AD user object id
 ONEDRIVE_USER = os.getenv("ONEDRIVE_USER", "").strip()
