@@ -42,7 +42,7 @@ HEADERS = [
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # Azure App credentials
-CLIENT_ID = "90984a43-f964-44b2-b8b4-e8295218d55d"
+CLIENT_ID = "e79ecadf-7da2-4ff3-9ca6-f3738141952e"
 TENANT_ID = "5d471751-9675-428d-917b-70f44f9630b0"
 CLIENT_SECRET = "hkF8Q~_mrrghOYTwVuts3P7Cg0KHb9B22BAfmcXY"
 AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
