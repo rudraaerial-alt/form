@@ -5,7 +5,7 @@ services:
     plan: starter
     autoDeployTrigger: commit
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --workers 1 --threads 4 --timeout 120 app:app
+    startCommand:gunicorn --bind=0.0.0.0 --timeout 600 main_form_fixed:app
     envVars:
       - key: DATA_DIR
         value: /var/data
