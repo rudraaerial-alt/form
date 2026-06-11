@@ -7,15 +7,30 @@ on:
 
 jobs:
   deploy:
-    name: Trigger Render Deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Trigger deploy on Render
+      - name: Debug secret presence
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
-          curl "$RENDER_DEPLOY_HOOK_URL"
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "Secret is empty or missing"
+            exit 1
+          fi
+
+          echo "Secret length: ${#RENDER_DEPLOY_HOOK_URL}"
+
+          case "$RENDER_DEPLOY_HOOK_URL" in
+            https://api.render.com/deploy/*) echo "Looks like a Render deploy hook URL" ;;
+            *) echo "Secret exists, but format does not look like a Render deploy hook URL"; exit 1 ;;
+          esac
+
+      - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl -fsSL "$RENDER_DEPLOY_HOOK_URL"
