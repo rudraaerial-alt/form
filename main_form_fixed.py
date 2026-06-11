@@ -6,29 +6,30 @@ from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 
-# -----------------------------
-# Paths / Storage
-# -----------------------------
-BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = Path(os.getenv("DATA_DIR", BASE_DIR / "data"))
+# -------------------------------------------------------
+# Storage
+# -------------------------------------------------------
+# Render persistent disk mount path should be /var/data
+# Local machine par bhi kaam kare isliye env override support diya hai.
+DATA_DIR = Path(os.getenv("DATA_DIR", "/var/data"))
 DB_FILE_PATH = DATA_DIR / "pe_form_data.db"
 
-# -----------------------------
+# -------------------------------------------------------
 # Flask app
-# -----------------------------
+# -------------------------------------------------------
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
 
-# -----------------------------
+# -------------------------------------------------------
 # Helpers
-# -----------------------------
+# -------------------------------------------------------
 def ensure_data_dir() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_db_connection():
     ensure_data_dir()
-    conn = sqlite3.connect(DB_FILE_PATH)
+    conn = sqlite3.connect(DB_FILE_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -36,6 +37,10 @@ def get_db_connection():
 def init_db() -> None:
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Small reliability improvement for SQLite
+    cursor.execute("PRAGMA journal_mode=WAL;")
+    cursor.execute("PRAGMA synchronous=NORMAL;")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS pe_form_data (
@@ -118,7 +123,7 @@ def normalize_sno(data: dict) -> int:
     return get_next_sno()
 
 
-def save_row_to_db(data: dict) -> int:
+def save_row_to_db(data: dict) -> tuple[int, int]:
     init_db()
 
     sno = normalize_sno(data)
@@ -183,7 +188,7 @@ def save_row_to_db(data: dict) -> int:
     conn.commit()
     conn.close()
 
-    return inserted_id
+    return inserted_id, sno
 
 
 def fetch_all_records(limit=200):
@@ -227,22 +232,20 @@ def fetch_all_records(limit=200):
     return rows
 
 
-# -----------------------------
+# -------------------------------------------------------
 # Routes
-# -----------------------------
+# -------------------------------------------------------
 @app.get("/")
 def home():
-    """
-    Agar templates/Form.html hai to render karega.
-    Agar nahi hai to simple message dikhayega.
-    """
     init_db()
     try:
         return render_template("Form.html")
     except Exception:
         return jsonify({
             "status": "ok",
-            "message": "App chal rahi hai. templates/Form.html add kar do agar UI chahiye."
+            "message": "App chal rahi hai. templates/Form.html file missing hai.",
+            "database_file": str(DB_FILE_PATH),
+            "next_sno": get_next_sno()
         })
 
 
@@ -253,6 +256,7 @@ def health():
         return jsonify({
             "status": "ok",
             "database_file": str(DB_FILE_PATH),
+            "data_dir": str(DATA_DIR),
             "next_sno": get_next_sno()
         })
     except Exception as exc:
@@ -274,9 +278,6 @@ def next_sno_route():
 
 @app.get("/records")
 def records():
-    """
-    Last 200 records dekhne ke liye
-    """
     try:
         rows = fetch_all_records(limit=200)
         return jsonify({
@@ -302,13 +303,13 @@ def submit():
                 "message": error_message
             }), 400
 
-        inserted_id = save_row_to_db(data)
+        inserted_id, sno = save_row_to_db(data)
 
         return jsonify({
             "success": True,
             "message": "Data database me successfully save ho gaya.",
             "record_id": inserted_id,
-            "sno": normalize_sno(data),
+            "sno": sno,
             "database_file": str(DB_FILE_PATH)
         })
 
