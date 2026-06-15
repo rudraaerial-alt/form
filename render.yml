@@ -12,12 +12,9 @@ services:
     healthCheckPath: /health
 
     envVars:
-      - key: DATA_DIR
-        value: /var/data
+      - key: DATABASE_URL
+        value: postgresql://form_excel_data_user:YOUR_PASSWORD@dpg-d8ji2grbc2fs73bnofug-a/form_excel_data
       - key: PYTHONUNBUFFERED
         value: "1"
 
-    disk:
-      name: pe-form-data
-      mountPath: /var/data
-      sizeGB: 1
+
