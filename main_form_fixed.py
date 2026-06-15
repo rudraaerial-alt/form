@@ -13,7 +13,7 @@ from flask import Flask, jsonify, render_template, request
 # Render dashboard me DATABASE_URL env variable set karo.
 # Example:
 # DATABASE_URL=postgresql://username:password@host/database
-DATABASE_URL = os.getenv("postgresql://form_excel_data_user:G08wKKuj8PBknNPRFQlqQbwei562dsdx@dpg-d8ji2grbc2fs73bnofug-a/form_excel_data")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable missing hai.")
