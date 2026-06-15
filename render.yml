@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: pe-form-app
+    runtime: python
+    plan: starter
+    autoDeployTrigger: commit
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind=0.0.0.0 --timeout 600 main_form_fixed:app
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    disk:
+      name: pe-form-data
+      mountPath: /var/data
+      sizeGB: 1
