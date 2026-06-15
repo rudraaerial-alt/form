@@ -12,9 +12,12 @@ services:
     healthCheckPath: /health
 
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
       - key: DATABASE_URL
-        value: postgresql://form_excel_data_user:YOUR_PASSWORD@dpg-d8ji2grbc2fs73bnofug-a/form_excel_data
+        sync: false
       - key: PYTHONUNBUFFERED
         value: "1"
+
 
 
