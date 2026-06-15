@@ -1,18 +1,28 @@
 import os
-import sqlite3
 import traceback
 from datetime import datetime, timezone
-from pathlib import Path
 
+import psycopg2
+import psycopg2.extras
 from flask import Flask, jsonify, render_template, request
 
 # -------------------------------------------------------
-# Storage
+# PostgreSQL Database
 # -------------------------------------------------------
-# Render persistent disk mount path should be /var/data
-# Local machine par bhi kaam kare isliye env override support diya hai.
-DATA_DIR = Path(os.getenv("DATA_DIR", "/var/data"))
-DB_FILE_PATH = DATA_DIR / "pe_form_data.db"
+# IMPORTANT:
+# Render dashboard me DATABASE_URL env variable set karo.
+# Example:
+# DATABASE_URL=postgresql://username:password@host/database
+DATABASE_URL = os.getenv("postgresql://form_excel_data_user:G08wKKuj8PBknNPRFQlqQbwei562dsdx@dpg-d8ji2grbc2fs73bnofug-a/form_excel_data")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable missing hai.")
+
+# Optional:
+# Agar SSL required ho to Render me normally URL ke through ho jata hai.
+# Zarurat pade to aise use kar sakte ho:
+# DATABASE_URL = DATABASE_URL + "?sslmode=require"
+
 
 # -------------------------------------------------------
 # Flask app
@@ -23,14 +33,8 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 # -------------------------------------------------------
 # Helpers
 # -------------------------------------------------------
-def ensure_data_dir() -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-
 def get_db_connection():
-    ensure_data_dir()
-    conn = sqlite3.connect(DB_FILE_PATH, timeout=30)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(DATABASE_URL)
     return conn
 
 
@@ -38,13 +42,9 @@ def init_db() -> None:
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Small reliability improvement for SQLite
-    cursor.execute("PRAGMA journal_mode=WAL;")
-    cursor.execute("PRAGMA synchronous=NORMAL;")
-
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS pe_form_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             sno INTEGER NOT NULL,
             pe_non_pe TEXT NOT NULL,
             category TEXT NOT NULL,
@@ -67,11 +67,12 @@ def init_db() -> None:
             remarks1 TEXT,
             remarks2 TEXT,
             remarks TEXT,
-            created_at_utc TEXT NOT NULL
+            created_at_utc TIMESTAMPTZ NOT NULL
         )
     """)
 
     conn.commit()
+    cursor.close()
     conn.close()
 
 
@@ -86,10 +87,12 @@ def list_to_string(value):
 def get_next_sno() -> int:
     init_db()
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("SELECT COALESCE(MAX(sno), 0) + 1 AS next_sno FROM pe_form_data")
     row = cursor.fetchone()
+
+    cursor.close()
     conn.close()
 
     return int(row["next_sno"]) if row and row["next_sno"] else 1
@@ -127,7 +130,7 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
     init_db()
 
     sno = normalize_sno(data)
-    created_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    created_at = datetime.now(timezone.utc)
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -157,7 +160,8 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
             remarks2,
             remarks,
             created_at_utc
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
     """, (
         sno,
         list_to_string(data.get("peNonPe")),
@@ -184,8 +188,10 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
         created_at,
     ))
 
-    inserted_id = cursor.lastrowid
+    inserted_id = cursor.fetchone()[0]
     conn.commit()
+
+    cursor.close()
     conn.close()
 
     return inserted_id, sno
@@ -194,7 +200,7 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
 def fetch_all_records(limit=200):
     init_db()
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -224,10 +230,12 @@ def fetch_all_records(limit=200):
             created_at_utc
         FROM pe_form_data
         ORDER BY id DESC
-        LIMIT ?
+        LIMIT %s
     """, (limit,))
 
     rows = [dict(row) for row in cursor.fetchall()]
+
+    cursor.close()
     conn.close()
     return rows
 
@@ -244,7 +252,6 @@ def home():
         return jsonify({
             "status": "ok",
             "message": "App chal rahi hai. templates/Form.html file missing hai.",
-            "database_file": str(DB_FILE_PATH),
             "next_sno": get_next_sno()
         })
 
@@ -255,8 +262,7 @@ def health():
         init_db()
         return jsonify({
             "status": "ok",
-            "database_file": str(DB_FILE_PATH),
-            "data_dir": str(DATA_DIR),
+            "database": "PostgreSQL",
             "next_sno": get_next_sno()
         })
     except Exception as exc:
@@ -307,10 +313,9 @@ def submit():
 
         return jsonify({
             "success": True,
-            "message": "Data database me successfully save ho gaya.",
+            "message": "Data PostgreSQL database me successfully save ho gaya.",
             "record_id": inserted_id,
-            "sno": sno,
-            "database_file": str(DB_FILE_PATH)
+            "sno": sno
         })
 
     except Exception as exc:
