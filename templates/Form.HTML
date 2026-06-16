@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PE Form</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>SR. No. &amp; Executor</h2>
+        <p>
+          Saved / planned activities.
+          <strong>S.No + Activity Executor + Domain</strong>
+        </p>
+      </div>
+      <div class="sidebar-subtitle">Planned Activities</div>
+      <div class="activity-list" id="activityList">
+        <div class="activity-item empty">
+          <strong>No activity saved yet</strong>
+          <span>after saving activity shown here.</span>
+          <span class="tag">Waiting</span>
+        </div>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title">
+          <h1>PE Form</h1>
+        </div>
+        <div class="topbar-cards">
+          <div class="mini-card">
+            <small>Current S.No</small>
+            <strong id="badgeSno">-</strong>
+          </div>
+          <div class="mini-card">
+            <small>Current Status</small>
+            <strong id="badgeStatus">Draft</strong>
+          </div>
+          <div class="mini-card">
+            <small>Last Action</small>
+            <strong id="badgeAction">Ready</strong>
+          </div>
+        </div>
+      </div>
+      <div class="content-layout">
+        <section class="card">
+          <div class="card-header">
+            <h2>PE Activity Entry Form</h2>
+          </div>
+          <div class="summary-panel">
+            <div class="summary-item">
+              <span class="summary-label">S.No</span>
+              <strong id="summarySno">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">PE / Non-PE User</span>
+              <strong id="summaryPeType">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Category</span>
+              <strong id="summaryCategory">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Executor</span>
+              <strong id="summaryExecutor">-</strong>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="peForm">
+              <div class="section-title">Basic Information</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="sno" class="required">S.No</label>
+                  <input id="sno" name="sno" type="text" readonly />
+                  <div class="help-text">Auto serial backend se ayega.</div>
+                </div>
+                <div class="form-group">
+                  <label for="peNonPe" class="required">PE / Non-PE User</label>
+                  <input id="peNonPe" name="peNonPe" type="text" placeholder="Enter PE / Non-PE User" />
+                </div>
+                <div class="form-group">
+                  <label class="required">Category</label>
+                  <div id="dd-category"></div>
+                </div>
+                <div class="form-group">
+                  <label class="required">Executor</label>
+                  <div id="dd-executor"></div>
+                </div>
+                <div class="form-group">
+                  <label for="totalNodeCount">Total Node Count</label>
+                  <input id="totalNodeCount" name="totalNodeCount" type="number" placeholder="Enter total node count" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="required">Site / Cell</label>
+                  <div id="dd-siteCell"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Circle</label>
+                  <div id="dd-circle"></div>
+                  <div class="help-text">Multiple circles selection.</div>
+                </div>
+                <div class="form-group">
+                  <label for="dateOfPe">Date of PE</label>
+                  <input id="dateOfPe" name="dateOfPe" type="date" />
+                </div>
+              </div>
+              <div class="section-title">PE Purpose Details</div>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>PE Purpose</label>
+                  <div id="dd-pePurpose"></div>
+                </div>
+                <div class="form-group full">
+                  <label>PE Purpose - Sub2</label>
+                  <div id="dd-pePurposeSub2"></div>
+                </div>
+              </div>
+              <div class="section-title">People / Ownership</div>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>Activity Initiator</label>
+                  <div id="dd-activityInitiator"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Activity Owner</label>
+                  <div id="dd-activityOwner"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Activity Executor</label>
+                  <div id="dd-activityExecutor"></div>
+                </div>
+              </div>
+              <div class="section-title">Approval &amp; Status</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Deploy Approval</label>
+                  <div id="dd-deployApproval"></div>
+                </div>
+                <div class="form-group">
+                  <label>NPO KPI Approval</label>
+                  <div id="dd-npoKpiApproval"></div>
+                </div>
+                <div class="form-group">
+                  <label>NPO AT Approval</label>
+                  <div id="dd-npoAtApproval"></div>
+                </div>
+                <div class="form-group">
+                  <label>TSS Approval</label>
+                  <div id="dd-tssApproval"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Status</label>
+                  <div id="dd-status"></div>
+                </div>
+                <div class="form-group full">
+                  <label>Domain</label>
+                  <div id="dd-domain"></div>
+                </div>
+              </div>
+              <div class="section-title">Remarks</div>
+              <div class="form-grid remarks-grid">
+                <div class="form-group">
+                  <label>Remarks1</label>
+                  <div id="dd-remarks1"></div>
+                </div>
+                <div class="form-group">
+                  <label>Remarks2</label>
+                  <div id="dd-remarks2"></div>
+                </div>
+                <div class="form-group">
+                  <label for="contactNo">Contact No.</label>
+                  <input id="contactNo" name="contactNo" type="text" placeholder="Enter contact number" />
+                </div>
+                <div class="form-group form-group-half">
+                  <label for="remarks">Remarks</label>
+                  <textarea id="remarks" name="remarks" class="remarks-textarea" placeholder="User ka input yahan likhega..."></textarea>
+                </div>
+                <div class="form-group form-group-half">
+                  <label for="activityDetails">Activity Details</label>
+                  <textarea id="activityDetails" name="activityDetails" class="activity-details-textarea" placeholder="Enter activity details"></textarea>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button type="submit" class="btn-primary">Save to Excel</button>
+                <button type="button" class="btn-secondary" id="resetBtn">New Activity</button>
+              </div>
+            </form>
+          </div>
+        </section>
+        <aside class="side-panel">
+          <div class="logo-card">
+            <div class="nokia-logo">
+              <img src="{{ url_for('static', filename='NOKIA-logo.jpg') }}" alt="Nokia Logo" />
+            </div>
+            <div class="logo-caption"></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="{{ url_for('static', filename='Script.js') }}"></script>
+</body>
+</html>
