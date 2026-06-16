@@ -58,6 +58,11 @@ def init_db() -> None:
             activity_initiator TEXT,
             activity_owner TEXT,
             activity_executor TEXT,
+
+            activity_details TEXT,
+            pe_non_pe_user TEXT,
+            contact_details TEXT,
+
             deploy_approval TEXT,
             npo_kpi_approval TEXT,
             npo_at_approval TEXT,
@@ -69,6 +74,22 @@ def init_db() -> None:
             remarks TEXT,
             created_at_utc TIMESTAMPTZ NOT NULL
         )
+    """)
+
+    # Existing table me new columns add karne ke liye
+    cursor.execute("""
+        ALTER TABLE pe_form_data
+        ADD COLUMN IF NOT EXISTS activity_details TEXT
+    """)
+
+    cursor.execute("""
+        ALTER TABLE pe_form_data
+        ADD COLUMN IF NOT EXISTS pe_non_pe_user TEXT
+    """)
+
+    cursor.execute("""
+        ALTER TABLE pe_form_data
+        ADD COLUMN IF NOT EXISTS contact_details TEXT
     """)
 
     conn.commit()
@@ -150,6 +171,9 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
             activity_initiator,
             activity_owner,
             activity_executor,
+            activity_details,
+            pe_non_pe_user,
+            contact_details,
             deploy_approval,
             npo_kpi_approval,
             npo_at_approval,
@@ -160,7 +184,7 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
             remarks2,
             remarks,
             created_at_utc
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id
     """, (
         sno,
@@ -176,6 +200,11 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
         list_to_string(data.get("activityInitiator")),
         list_to_string(data.get("activityOwner")),
         list_to_string(data.get("activityExecutor")),
+
+        list_to_string(data.get("activityDetails")),
+        list_to_string(data.get("peNonPeUser")),
+        list_to_string(data.get("contactDetails")),
+
         list_to_string(data.get("deployApproval")),
         list_to_string(data.get("npoKpiApproval")),
         list_to_string(data.get("npoAtApproval")),
@@ -218,6 +247,9 @@ def fetch_all_records(limit=200):
             activity_initiator,
             activity_owner,
             activity_executor,
+            activity_details,
+            pe_non_pe_user,
+            contact_details,
             deploy_approval,
             npo_kpi_approval,
             npo_at_approval,
