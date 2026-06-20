@@ -122,8 +122,8 @@ const dropdownDefinitions = {
 };
 
 const dropdownStates = {};
-const form = document.getElementById("peForm");
-const toast = document.getElementById("toast");
+let form = null;
+let toast = null;
 
 function showToast(message, type = "default") {
   toast.textContent = message;
@@ -143,7 +143,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -343,6 +343,7 @@ function buildPayload() {
     remarks1: getDropdownValue("remarks1"),
     remarks2: getDropdownValue("remarks2"),
     contactNo: document.getElementById("contactNo").value.trim(),
+    contactDetails: document.getElementById("contactNo").value.trim(),
     remarks: document.getElementById("remarks").value.trim(),
     activityDetails: document.getElementById("activityDetails").value.trim(),
   };
@@ -350,7 +351,8 @@ function buildPayload() {
 
 function validatePayload(data) {
   if (!data.sno) return "S.No missing hai.";
-  if (data.peNonPe.length === 0) return "PE / Non-PE User fill karein.";
+  if (data.peNonPe.length === 0) return "PE / Non-PE (User) fill karein.";
+  if (data.contactNo && !/^\d+$/.test(data.contactNo)) return "User Phone No. me sirf numbers allowed hain.";
   if (data.category.length === 0) return "Category select karein.";
   if (data.executor.length === 0) return "Executor select karein.";
   if (data.siteCell.length === 0) return "Site / Cell select karein.";
