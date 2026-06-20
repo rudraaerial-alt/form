@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PE Form</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <!-- Relative paths so file works in Flask as well as direct open from templates folder -->
+  <link rel="stylesheet" href="../static/style.css" />
 </head>
 <body>
   <div class="app">
@@ -20,11 +21,12 @@
       <div class="activity-list" id="activityList">
         <div class="activity-item empty">
           <strong>No activity saved yet</strong>
-          <span>after saving activity shown here.</span>
+          <span>After saving activity shown here.</span>
           <span class="tag">Waiting</span>
         </div>
       </div>
     </aside>
+
     <main class="main">
       <div class="topbar">
         <div class="topbar-title">
@@ -45,11 +47,13 @@
           </div>
         </div>
       </div>
+
       <div class="content-layout">
         <section class="card">
           <div class="card-header">
             <h2>PE Activity Entry Form</h2>
           </div>
+
           <div class="summary-panel">
             <div class="summary-item">
               <span class="summary-label">S.No</span>
@@ -68,6 +72,7 @@
               <strong id="summaryExecutor">-</strong>
             </div>
           </div>
+
           <div class="card-body">
             <form id="peForm" autocomplete="off">
               <div class="section-title">Basic Information</div>
@@ -77,38 +82,45 @@
                   <input id="sno" name="sno" type="text" readonly />
                   <div class="help-text">Auto serial backend se ayega.</div>
                 </div>
+
                 <div class="form-group">
                   <label for="peNonPe" class="required">PE / Non-PE (User)</label>
-                  <input id="peNonPe" name="peNonPe" type="text" placeholder="Enter PE / Non-PE (User)" />
-                </div>
+                  <input id="peNonPe" name="peNonPe" type="text" placeholder="Enter PE / Non-PE (User)" required />
                   <div class="help-text">Is field me user text aur number dono likh sakta hai.</div>
                 </div>
+
                 <div class="form-group">
                   <label class="required">Category</label>
                   <div id="dd-category"></div>
                 </div>
+
                 <div class="form-group">
                   <label class="required">Executor</label>
                   <div id="dd-executor"></div>
                 </div>
+
                 <div class="form-group">
                   <label for="totalNodeCount">Total Node Count</label>
-                  <input id="totalNodeCount" name="totalNodeCount" type="number" placeholder="Enter total node count" min="0" />
+                  <input id="totalNodeCount" name="totalNodeCount" type="number" min="0" placeholder="Enter total node count" />
                 </div>
+
                 <div class="form-group">
                   <label class="required">Site / Cell</label>
                   <div id="dd-siteCell"></div>
                 </div>
+
                 <div class="form-group full">
                   <label>Circle</label>
                   <div id="dd-circle"></div>
                   <div class="help-text">Multiple circles selection.</div>
                 </div>
+
                 <div class="form-group">
                   <label for="dateOfPe">Date of PE</label>
                   <input id="dateOfPe" name="dateOfPe" type="date" />
                 </div>
               </div>
+
               <div class="section-title">PE Purpose Details</div>
               <div class="form-grid">
                 <div class="form-group full">
@@ -120,6 +132,7 @@
                   <div id="dd-pePurposeSub2"></div>
                 </div>
               </div>
+
               <div class="section-title">People / Ownership</div>
               <div class="form-grid">
                 <div class="form-group full">
@@ -135,6 +148,7 @@
                   <div id="dd-activityExecutor"></div>
                 </div>
               </div>
+
               <div class="section-title">Approval &amp; Status</div>
               <div class="form-grid">
                 <div class="form-group">
@@ -162,6 +176,7 @@
                   <div id="dd-domain"></div>
                 </div>
               </div>
+
               <div class="section-title">Remarks</div>
               <div class="form-grid remarks-grid">
                 <div class="form-group">
@@ -174,8 +189,7 @@
                 </div>
                 <div class="form-group">
                   <label for="contactNo">User Phone No.</label>
-                  <input id="contactNo" name="contactNo" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="15" autocomplete="off" placeholder="Enter user phone number" />
-                </div>
+                  <input id="contactNo" name="contactNo" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="15" placeholder="Enter user phone number" />
                   <div class="help-text">Is box me sirf numbers allow honge.</div>
                 </div>
                 <div class="form-group form-group-half">
@@ -187,17 +201,19 @@
                   <textarea id="activityDetails" name="activityDetails" class="activity-details-textarea" placeholder="Enter activity details"></textarea>
                 </div>
               </div>
+
               <div class="btn-row">
-                <button type="submit" class="btn-primary">Save to Excel</button>
+                <button type="submit" class="btn-primary">Save</button>
                 <button type="button" class="btn-secondary" id="resetBtn">New Activity</button>
               </div>
             </form>
           </div>
         </section>
+
         <aside class="side-panel">
-          <div class="logo-card">
-            <div class="nokia-logo">
-              <img src="{{ url_for('static', filename='NOKIA-logo.jpg') }}" alt="Nokia Logo" />
+          <div class="logo-card logo-card-original">
+            <div class="nokia-logo nokia-logo-original">
+              <img src="../static/NOKIA-logo.jpg" alt="Nokia Logo" />
             </div>
             <div class="logo-caption"></div>
           </div>
@@ -205,7 +221,8 @@
       </div>
     </main>
   </div>
+
   <div class="toast" id="toast"></div>
-  <script src="{{ url_for('static', filename='Script.js') }}" defer></script>
+  <script src="../static/Script.js" defer></script>
 </body>
 </html>
