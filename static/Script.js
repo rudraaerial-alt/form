@@ -229,6 +229,7 @@ function buildPayload() {
     sno: document.getElementById('sno')?.value.trim() || '',
     peNonPe: peNonPeValue ? [peNonPeValue] : [],
     peNonPeUser: peNonPeValue,
+    PeNonPe: getDropdownValue('PeNonPe'),
     category: getDropdownValue('category'),
     executor: getDropdownValue('executor'),
     totalNodeCount: document.getElementById('totalNodeCount')?.value.trim() || '',
