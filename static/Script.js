@@ -1,4 +1,5 @@
 const dropdownDefinitions = {
+  PeNonPe: { placeholder: "Select PE/Non-PE", multi: false, options: ["PE", "Non-PE"] },
   category: { placeholder: "Select Category", multi: false, options: ["NSA", "SA"] },
   executor: { placeholder: "Select Executor", multi: false, options: ["Nokia", "RJIO"] },
   siteCell: { placeholder: "Select Site / Cell", multi: false, options: ["Site", "Cell"] },
