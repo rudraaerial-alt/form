@@ -56,7 +56,7 @@
               <strong id="summarySno">-</strong>
             </div>
             <div class="summary-item">
-              <span class="summary-label">PE / Non-PE User</span>
+              <span class="summary-label">PE / Non-PE (User)</span>
               <strong id="summaryPeType">-</strong>
             </div>
             <div class="summary-item">
@@ -69,7 +69,7 @@
             </div>
           </div>
           <div class="card-body">
-            <form id="peForm">
+            <form id="peForm" autocomplete="off">
               <div class="section-title">Basic Information</div>
               <div class="form-grid">
                 <div class="form-group">
@@ -78,8 +78,10 @@
                   <div class="help-text">Auto serial backend se ayega.</div>
                 </div>
                 <div class="form-group">
-                  <label for="peNonPe" class="required">PE / Non-PE User</label>
-                  <input id="peNonPe" name="peNonPe" type="text" placeholder="Enter PE / Non-PE User" />
+                  <label for="peNonPe" class="required">PE / Non-PE (User)</label>
+                  <input id="peNonPe" name="peNonPe" type="text" placeholder="Enter PE / Non-PE (User)" />
+                </div>
+                  <div class="help-text">Is field me user text aur number dono likh sakta hai.</div>
                 </div>
                 <div class="form-group">
                   <label class="required">Category</label>
@@ -171,8 +173,10 @@
                   <div id="dd-remarks2"></div>
                 </div>
                 <div class="form-group">
-                  <label for="contactNo">Contact No.</label>
-                  <input id="contactNo" name="contactNo" type="text" placeholder="Enter contact number" />
+                  <label for="contactNo">User Phone No.</label>
+                  <input id="contactNo" name="contactNo" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="15" autocomplete="off" placeholder="Enter user phone number" />
+                </div>
+                  <div class="help-text">Is box me sirf numbers allow honge.</div>
                 </div>
                 <div class="form-group form-group-half">
                   <label for="remarks">Remarks</label>
@@ -202,6 +206,6 @@
     </main>
   </div>
   <div class="toast" id="toast"></div>
-  <script src="{{ url_for('static', filename='Script.js') }}"></script>
+  <script src="{{ url_for('static', filename='Script.js') }}" defer></script>
 </body>
 </html>
