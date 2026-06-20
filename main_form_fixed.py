@@ -121,7 +121,7 @@ def get_next_sno() -> int:
 
 def validate_payload(data: dict):
     required_fields = {
-        "peNonPe": "PE / Non-PE",
+        "peNonPe": "PE / Non-PE (User)",
         "category": "Category",
         "executor": "Executor",
         "siteCell": "Site / Cell",
@@ -203,7 +203,7 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
 
         list_to_string(data.get("activityDetails")),
         list_to_string(data.get("peNonPeUser")),
-        list_to_string(data.get("contactDetails")),
+        list_to_string(data.get("contactDetails") or data.get("contactNo")),
 
         list_to_string(data.get("deployApproval")),
         list_to_string(data.get("npoKpiApproval")),
@@ -279,11 +279,11 @@ def fetch_all_records(limit=200):
 def home():
     init_db()
     try:
-        return render_template("Form.html")
+        return render_template("Form.HTML")
     except Exception:
         return jsonify({
             "status": "ok",
-            "message": "App chal rahi hai. templates/Form.html file missing hai.",
+            "message": "App chal rahi hai. templates/Form.HTML file missing hai.",
             "next_sno": get_next_sno()
         })
 
