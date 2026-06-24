@@ -53,6 +53,8 @@ def init_db() -> None:
             site_cell TEXT NOT NULL,
             circle TEXT,
             date_of_pe TEXT,
+            start_date_of_pe TEXT,
+            end_date_of_pe TEXT,
             pe_purpose TEXT,
             pe_purpose_sub2 TEXT,
             activity_initiator TEXT,
@@ -90,6 +92,16 @@ def init_db() -> None:
     cursor.execute("""
         ALTER TABLE pe_form_data
         ADD COLUMN IF NOT EXISTS contact_details TEXT
+    """)
+
+    cursor.execute("""
+        ALTER TABLE pe_form_data
+        ADD COLUMN IF NOT EXISTS start_date_of_pe TEXT
+    """)
+
+    cursor.execute("""
+        ALTER TABLE pe_form_data
+        ADD COLUMN IF NOT EXISTS end_date_of_pe TEXT
     """)
 
     conn.commit()
@@ -137,6 +149,15 @@ def validate_payload(data: dict):
             if not str(value or "").strip():
                 return f"{label} select karein."
 
+    start_date = str(data.get("startdate", "")).strip()
+    end_date = str(data.get("enddate", "")).strip()
+    if start_date and end_date:
+        try:
+            if datetime.fromisoformat(start_date) > datetime.fromisoformat(end_date):
+                return "Start Date of PE, End Date of PE se bada nahi hona chahiye."
+        except ValueError:
+            return "Start Date of PE / End Date of PE ka format sahi nahi hai."
+
     return None
 
 
@@ -166,6 +187,8 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
             site_cell,
             circle,
             date_of_pe,
+            start_date_of_pe,
+            end_date_of_pe,
             pe_purpose,
             pe_purpose_sub2,
             activity_initiator,
@@ -184,7 +207,7 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
             remarks2,
             remarks,
             created_at_utc
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id
     """, (
         sno,
@@ -195,6 +218,8 @@ def save_row_to_db(data: dict) -> tuple[int, int]:
         list_to_string(data.get("siteCell")),
         list_to_string(data.get("circle")),
         str(data.get("dateOfPe", "")).strip(),
+        str(data.get("startdate", "")).strip(),
+        str(data.get("enddate", "")).strip(),
         list_to_string(data.get("pePurpose")),
         list_to_string(data.get("pePurposeSub2")),
         list_to_string(data.get("activityInitiator")),
@@ -242,6 +267,8 @@ def fetch_all_records(limit=200):
             site_cell,
             circle,
             date_of_pe,
+            start_date_of_pe,
+            end_date_of_pe,
             pe_purpose,
             pe_purpose_sub2,
             activity_initiator,
