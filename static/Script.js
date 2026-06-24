@@ -97,6 +97,7 @@ function renderOptions(fieldName, filterText = '') {
 
   const optionsContainer = root.querySelector('.dd-options');
   const filtered = state.options.filter(option => option.toLowerCase().includes(filterText.toLowerCase()));
+
   optionsContainer.innerHTML = filtered.map(option => {
     const checked = state.selected.includes(option) ? 'checked' : '';
     const inputType = state.multi ? 'checkbox' : 'radio';
@@ -125,6 +126,7 @@ function syncDropdownUI(fieldName) {
   } else {
     btnText.innerHTML = state.selected.map(item => `<span class="chip">${escapeHtml(item)}</span>`).join('');
   }
+
   updateSummary();
 }
 
@@ -151,8 +153,8 @@ function attachDropdownEvents(fieldName) {
   optionsContainer.addEventListener('change', (event) => {
     const target = event.target;
     if (!target || !target.matches('input')) return;
-    const value = target.value;
 
+    const value = target.value;
     if (state.multi) {
       if (target.checked) {
         if (!state.selected.includes(value)) state.selected.push(value);
@@ -191,14 +193,13 @@ async function loadNextSerial() {
   if (!snoInput) return;
 
   try {
-    // Flask mode
     const response = await fetch('/next-sno');
     const data = await response.json();
     snoInput.value = data.next_sno || '';
   } catch (_) {
-    // Direct file open fallback
     if (!snoInput.value) snoInput.value = '1';
   }
+
   updateSummary();
 }
 
@@ -225,6 +226,7 @@ function updateSummary() {
 function buildPayload() {
   const peNonPeValue = document.getElementById('peNonPe')?.value.trim() || '';
   const contactNo = document.getElementById('contactNo')?.value.trim() || '';
+
   return {
     sno: document.getElementById('sno')?.value.trim() || '',
     peNonPe: peNonPeValue ? [peNonPeValue] : [],
@@ -236,6 +238,8 @@ function buildPayload() {
     siteCell: getDropdownValue('siteCell'),
     circle: getDropdownValue('circle'),
     dateOfPe: document.getElementById('dateOfPe')?.value || '',
+    startdate: document.getElementById('startdate')?.value || '',
+    enddate: document.getElementById('enddate')?.value || '',
     pePurpose: getDropdownValue('pePurpose'),
     pePurposeSub2: getDropdownValue('pePurposeSub2'),
     activityInitiator: getDropdownValue('activityInitiator'),
@@ -263,6 +267,9 @@ function validatePayload(data) {
   if (data.executor.length === 0) return 'Executor select karein.';
   if (data.siteCell.length === 0) return 'Site / Cell select karein.';
   if (data.contactNo && !/^\d+$/.test(data.contactNo)) return 'User Phone No. me sirf numbers allowed hain.';
+  if (data.startdate && data.enddate && new Date(data.startdate) > new Date(data.enddate)) {
+    return 'Start Date of PE, End Date of PE se bada nahi hona chahiye.';
+  }
   return null;
 }
 
@@ -281,19 +288,23 @@ function resetCustomDropdowns() {
 function addActivityCard(payload) {
   const list = document.getElementById('activityList');
   if (!list) return;
+
   const currentEmpty = list.querySelector('.activity-item.empty');
   if (currentEmpty) currentEmpty.remove();
 
   const card = document.createElement('div');
   card.className = 'activity-item';
+
   const executor = payload.activityExecutor.join(', ') || payload.executor.join(', ') || '-';
   const domain = payload.domain.join(', ') || '-';
   const status = payload.status.join(', ') || 'Planned';
+
   card.innerHTML = `
     <strong>S.No ${escapeHtml(payload.sno)} - ${escapeHtml(executor)}</strong>
     <span>Domain: ${escapeHtml(domain)}</span>
     <span class="tag">${escapeHtml(status)}</span>
   `;
+
   list.prepend(card);
 }
 
@@ -301,6 +312,7 @@ async function submitForm(event) {
   event.preventDefault();
   const payload = buildPayload();
   const validationError = validatePayload(payload);
+
   if (validationError) {
     showToast(validationError, 'error');
     return;
@@ -312,6 +324,7 @@ async function submitForm(event) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+
     const result = await response.json();
     if (response.ok && result.success) {
       addActivityCard(payload);
@@ -325,7 +338,6 @@ async function submitForm(event) {
       document.getElementById('badgeAction').textContent = 'Failed';
     }
   } catch (error) {
-    // direct html preview fallback: don't fail totally
     addActivityCard(payload);
     showToast('Preview mode me data locally check ho gaya. Flask run karoge to DB me save hoga.', 'success');
     document.getElementById('badgeAction').textContent = 'Preview';
@@ -335,9 +347,11 @@ async function submitForm(event) {
 function wirePhoneConstraint() {
   const phoneInput = document.getElementById('contactNo');
   if (!phoneInput) return;
+
   phoneInput.addEventListener('input', () => {
     phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 15);
   });
+
   phoneInput.addEventListener('paste', (event) => {
     event.preventDefault();
     const pasted = (event.clipboardData || window.clipboardData).getData('text') || '';
@@ -348,6 +362,7 @@ function wirePhoneConstraint() {
 function initFormApp() {
   form = document.getElementById('peForm');
   toast = document.getElementById('toast');
+
   if (!form) {
     console.error('Form #peForm not found');
     return;
