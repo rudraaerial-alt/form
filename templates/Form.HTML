@@ -48,8 +48,17 @@
         </div>
       </div>
 
-      <div class="content-layout">
+      <div class="content-layout single-column">
         <section class="card">
+          <div class="form-logo-wrap">
+            <div class="logo-card logo-card-inline logo-card-original">
+              <div class="nokia-logo nokia-logo-original">
+                <img src="../static/NOKIA-logo.jpg" alt="Nokia Logo" />
+              </div>
+              <div class="logo-caption"></div>
+            </div>
+          </div>
+
           <div class="card-header">
             <h2>PE Activity Entry Form</h2>
           </div>
@@ -82,15 +91,16 @@
                   <input id="sno" name="sno" type="text" readonly />
                   <div class="help-text">Auto serial backend se ayega.</div>
                 </div>
+
                 <div class="form-group">
-                  <label for="peNonPe" class="required">PE / Non-PE</label>
+                  <label for="dd-PeNonPe" class="required">PE / Non-PE</label>
                   <div id="dd-PeNonPe"></div>
                 </div>
 
                 <div class="form-group">
                   <label for="peNonPe" class="required">PE / Non-PE (User)</label>
                   <input id="peNonPe" name="peNonPe" type="text" placeholder="Enter PE / Non-PE (User)" required />
-                  <div class="help-text">wirte Text or number.</div>
+                  <div class="help-text">Write text or number.</div>
                 </div>
 
                 <div class="form-group">
@@ -123,15 +133,10 @@
                   <label for="dateOfPe">Date of PE</label>
                   <input id="dateOfPe" name="dateOfPe" type="date" />
                 </div>
-              </div>
-                </div>
 
                 <div class="form-group">
                   <label for="startdate">Start Date of PE</label>
                   <input id="startdate" name="startdate" type="datetime-local" />
-                </div>
-              </div>
-              </div>
                 </div>
 
                 <div class="form-group">
@@ -139,8 +144,6 @@
                   <input id="enddate" name="enddate" type="datetime-local" />
                 </div>
               </div>
-
-
 
               <div class="section-title">PE Purpose Details</div>
               <div class="form-grid">
@@ -230,15 +233,6 @@
             </form>
           </div>
         </section>
-
-        <aside class="side-panel">
-          <div class="logo-card logo-card-original">
-            <div class="nokia-logo nokia-logo-original">
-              <img src="../static/NOKIA-logo.jpg" alt="Nokia Logo" />
-            </div>
-            <div class="logo-caption"></div>
-          </div>
-        </aside>
       </div>
     </main>
   </div>
